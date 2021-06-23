@@ -67,7 +67,7 @@ jobs:
           ECR_REPOSITORY: movie-app
           IMAGE_TAG: ${{ github.sha }}
         with:
-          args: create job testjob --image=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.github.sha }}
+          args: create job testjob --image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       # - name: deploy to eks cluster
       #   run: |
