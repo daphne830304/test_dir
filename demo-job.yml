@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: database-dump-demo
+spec:
+  template:
+    metadata: 
+      name: database-dump-demo
+    spec:
+      containers:
+      - name: database-dump-demo
+        image: 720641203850.dkr.ecr.us-east-2.amazonaws.com/movie-app:job1801500
+      restartPolicy: Never
+
+
