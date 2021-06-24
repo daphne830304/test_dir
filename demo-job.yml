@@ -10,6 +10,15 @@ spec:
       containers:
       - name: database-dump-demo
         image: 720641203850.dkr.ecr.us-east-2.amazonaws.com/movie-app:${IMAGE_TAG}
+        env:
+            - name: PASSWORD
+              value: "env-var"
+        #     - name: HOST
+        #       value: "placeholder"
+        #     - name: PASSWORD
+        #       value: "Placeholder"
+        #     - name: HOST
+        #       value: "placeholder"
       restartPolicy: Never
 
 

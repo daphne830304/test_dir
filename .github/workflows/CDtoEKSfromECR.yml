@@ -64,7 +64,7 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
 
         run: |
-          envsubst < demo-job.yml
+          cat demo-job.yml | envsubst
 
 #       - name: Switch to staging cluster
 # #         run: kubectl config use-context staging
