@@ -7,8 +7,7 @@ name: Deploy to Amazon EKS
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
+
 
 env:
   AWS_REGION: us-east-2                # set this to your preferred AWS region, e.g. us-west-1
@@ -59,18 +58,32 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./Docker
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-      - name: deploy to cluster
-        uses: kodermax/kubectl-aws-eks@master
+
+      - name: Switch to staging cluster
+        run: kubectl config use-context staging
+      - uses: swdotcom/update-and-apply-kubernetes-configs@v1
+        with:
+          k8-config-file-paths: ./demo-job.yml 
+          replacement-method: defined
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+          # CHANGE_CAUSE: ${{ github.event.release.tag_name }}
+
+      - name: deploy to cluster  
+        uses: kodermax/kubectl-aws-eks@master  #this image allows kubectl usage
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: movie-app
           IMAGE_TAG: ${{ github.sha }}
         with:
-          args: create job testjob --image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          args: apply -f demo-job.yml
+          # create job testjob --image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          # cronjob kubectl create job --from=cronjob/<cronjob-name> <job-name> --image=image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       # - name: deploy to eks cluster
       #   run: |
+
       #   kubectl apply -f dump-test.yml
         
        
