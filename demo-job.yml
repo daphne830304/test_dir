@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
       - name: database-dump-demo
-        image: 720641203850.dkr.ecr.us-east-2.amazonaws.com/movie-app:job1801500
+        image: 720641203850.dkr.ecr.us-east-2.amazonaws.com/movie-app:${IMAGE_TAG}
       restartPolicy: Never
 
 
