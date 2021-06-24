@@ -63,20 +63,18 @@ jobs:
         uses: kodermax/kubectl-aws-eks@master  #this image allows kubectl usage
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
+          # ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          # ECR_REPOSITORY: movie-app
+          # IMAGE_TAG: ${{ github.sha }}
+      
+      - name: Subsitute ENV variables in kubernetes yaml files
+        env:
           IMAGE_TAG: ${{ github.sha }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+
         run: |
-          cat demo-job.yml | envsubst | kubectl apply -f demo-job.yml
-
-    
-      
-      # - name: Subsitute ENV variables in kubernetes yaml files
-      #   env:
-      #     IMAGE_TAG: ${{ github.sha }}
-      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-
-      #   run: |
-      #     cat demo-job.yml | envsubst | kubectl apply -f demo-job.yml
+          cat demo-job.yml | envsubst 
+          
 
 #       - name: Switch to staging cluster
 # #         run: kubectl config use-context staging
@@ -88,15 +86,15 @@ jobs:
 #           IMAGE_TAG: ${{ github.sha }}
 #           # CHANGE_CAUSE: ${{ github.event.release.tag_name }}
 
-      # - name: deploy to cluster  
-      #   uses: kodermax/kubectl-aws-eks@master  #this image allows kubectl usage
-      #   env:
-      #     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
-      #     # ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #     # ECR_REPOSITORY: movie-app
-      #     # IMAGE_TAG: ${{ github.sha }}
-      #   with:
-      #     args: apply -f demo-job.yml
+      - name: deploy to cluster  
+        uses: kodermax/kubectl-aws-eks@master  #this image allows kubectl usage
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
+          # ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          # ECR_REPOSITORY: movie-app
+          # IMAGE_TAG: ${{ github.sha }}
+        with:
+          args: apply -f demo-job.yml
           # create job testjob --image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           # cronjob kubectl create job --from=cronjob/<cronjob-name> <job-name> --image=image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 

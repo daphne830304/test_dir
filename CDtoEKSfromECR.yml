@@ -85,7 +85,7 @@ jobs:
           ECR_REPOSITORY: movie-app
           IMAGE_TAG: ${{ github.sha }}
         with:
-          args: apply -f demo-job.yml
+          args: apply -f demo-job.yml 
           # create job testjob --image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           # cronjob kubectl create job --from=cronjob/<cronjob-name> <job-name> --image=image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
