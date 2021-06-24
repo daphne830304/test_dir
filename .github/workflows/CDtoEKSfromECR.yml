@@ -58,16 +58,23 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./Docker
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-
-      - name: Switch to staging cluster
-#         run: kubectl config use-context staging
-        uses: swdotcom/update-and-apply-kubernetes-configs@v1
-        with:
-          k8-config-file-paths: ./demo-job.yml 
-          replacement-method: defined
+      
+      - name: Subsitute ENV variables in kubernetes yaml files
         env:
           IMAGE_TAG: ${{ github.sha }}
-          # CHANGE_CAUSE: ${{ github.event.release.tag_name }}
+
+        run: |
+          envsubst < demo-job.yml
+
+#       - name: Switch to staging cluster
+# #         run: kubectl config use-context staging
+#         uses: swdotcom/update-and-apply-kubernetes-configs@v1
+#         with:
+#           k8-config-file-paths: ./demo-job.yml 
+#           replacement-method: defined
+#         env:
+#           IMAGE_TAG: ${{ github.sha }}
+#           # CHANGE_CAUSE: ${{ github.event.release.tag_name }}
 
       - name: deploy to cluster  
         uses: kodermax/kubectl-aws-eks@master  #this image allows kubectl usage
