@@ -63,17 +63,20 @@ jobs:
         uses: kodermax/kubectl-aws-eks@master  #this image allows kubectl usage
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
-          # ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          # ECR_REPOSITORY: movie-app
-          # IMAGE_TAG: ${{ github.sha }}
-      
-      - name: Subsitute ENV variables in kubernetes yaml files
-        env:
           IMAGE_TAG: ${{ github.sha }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-
         run: |
           cat demo-job.yml | envsubst | kubectl apply -f demo-job.yml
+
+    
+      
+      # - name: Subsitute ENV variables in kubernetes yaml files
+      #   env:
+      #     IMAGE_TAG: ${{ github.sha }}
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+
+      #   run: |
+      #     cat demo-job.yml | envsubst | kubectl apply -f demo-job.yml
 
 #       - name: Switch to staging cluster
 # #         run: kubectl config use-context staging
