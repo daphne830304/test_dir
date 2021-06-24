@@ -60,7 +60,7 @@ jobs:
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
       - name: Switch to staging cluster
-        run: kubectl config use-context staging
+#         run: kubectl config use-context staging
       - uses: swdotcom/update-and-apply-kubernetes-configs@v1
         with:
           k8-config-file-paths: ./demo-job.yml 
