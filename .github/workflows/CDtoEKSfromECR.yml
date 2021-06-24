@@ -59,21 +59,22 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
       
-      - name: deploy to cluster  
-        uses: kodermax/kubectl-aws-eks@master  #this image allows kubectl usage
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
-          # ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          # ECR_REPOSITORY: movie-app
-          # IMAGE_TAG: ${{ github.sha }}
+      # - name: deploy to cluster  
+      #   uses: kodermax/kubectl-aws-eks@master  #this image allows kubectl usage
+      #   env:
+      #     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
+      #     # ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     # ECR_REPOSITORY: movie-app
+      #     # IMAGE_TAG: ${{ github.sha }}
       
       - name: Subsitute ENV variables in kubernetes yaml files
         env:
           IMAGE_TAG: ${{ github.sha }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
 
         run: |
-          cat demo-job.yml | envsubst | kubectl apply -f -
+          cat demo-job.yml | envsubst | kubectl --kubeconfig=$KUBE_CONFIG_DATA apply -f -
 
 
 #       - name: Switch to staging cluster
