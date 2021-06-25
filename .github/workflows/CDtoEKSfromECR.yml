@@ -76,7 +76,7 @@ jobs:
 
         run: |
           echo ${KUBE_CONFIG_DATA} | base64 -d > ${KUBECONFIG}
-          kubectl config use-context prod-cluster 
+          kubectl config use-context arn:aws:eks:us-east-2:720641203850:cluster/prod-cluster 
           cat demo-job.yml | envsubst | kubectl -f -
 
 
