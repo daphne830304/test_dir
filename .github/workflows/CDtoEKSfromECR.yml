@@ -70,7 +70,8 @@ jobs:
         run: |
           echo ${KUBE_CONFIG_DATA} | base64 -d > ${KUBECONFIG}
           kubectl config use-context arn:aws:eks:us-east-2:720641203850:cluster/prod-cluster 
-          cat demo-job.yml | envsubst | kubectl apply -f -
+          cat demo-job.yml | envsubst | kubectl apply -f -   
+          
 
 
 #       - name: Switch to staging cluster
