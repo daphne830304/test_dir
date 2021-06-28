@@ -5,8 +5,8 @@
 name: Deploy to Amazon EKS
 
 on:
-#   push:
-#     branches: [ master ]
+  push:
+    branches: [ master ]
 
 
 env:
@@ -24,93 +24,93 @@ defaults:
   run:
     shell: bash
 
-jobs:
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-    # permissions:
-    #   packages: write
-    #   contents: read
+# jobs:
+#   deploy:
+#     name: Deploy
+#     runs-on: ubuntu-latest
+#     # permissions:
+#     #   packages: write
+#     #   contents: read
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build, tag, and push image to Amazon ECR
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          # Build a docker container and
-          # push it to ECR so that it can
-          # be deployed to ECS.
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./Docker
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-      
-      
-      - name: Subsitute ENV variables in kubernetes job yaml files and apply to kubernetes
-        env:
-          IMAGE_TAG: ${{ github.sha }}
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
-
-        run: |
-          echo ${KUBE_CONFIG_DATA} | base64 -d > ${KUBECONFIG}
-          kubectl config use-context arn:aws:eks:us-east-2:720641203850:cluster/prod-cluster 
-          kubectl delete jobs database-dump-demo
-          cat demo-job.yml | envsubst | kubectl apply -f -   
-
-
-
-#       - name: Switch to staging cluster
-# #         run: kubectl config use-context prod-cluster
-#         uses: swdotcom/update-and-apply-kubernetes-configs@v1
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v1
 #         with:
-#           k8-config-file-paths: ./demo-job.yml 
-#           replacement-method: defined
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: ${{ env.AWS_REGION }}
+
+#       - name: Login to Amazon ECR
+#         id: login-ecr
+#         uses: aws-actions/amazon-ecr-login@v1
+
+#       - name: Build, tag, and push image to Amazon ECR
+#         id: build-image
+#         env:
+#           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#           IMAGE_TAG: ${{ github.sha }}
+#         run: |
+#           # Build a docker container and
+#           # push it to ECR so that it can
+#           # be deployed to ECS.
+#           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./Docker
+#           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+#           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+      
+      
+#       - name: Subsitute ENV variables in kubernetes job yaml files and apply to kubernetes
 #         env:
 #           IMAGE_TAG: ${{ github.sha }}
-#           # CHANGE_CAUSE: ${{ github.event.release.tag_name }}
+#           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
 
-      # - name: deploy to cluster  
-      #   uses: kodermax/kubectl-aws-eks@master  #this image allows kubectl usage
-      #   env:
-      #     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
-      #     # ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #     # ECR_REPOSITORY: movie-app
-      #     # IMAGE_TAG: ${{ github.sha }}
-      #   with:
-      #     args: apply -f demo-job.yml
-          # create job testjob --image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          # cronjob kubectl create job --from=cronjob/<cronjob-name> <job-name> --image=image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+#         run: |
+#           echo ${KUBE_CONFIG_DATA} | base64 -d > ${KUBECONFIG}
+#           kubectl config use-context arn:aws:eks:us-east-2:720641203850:cluster/prod-cluster 
+#           kubectl delete jobs database-dump-demo
+#           cat demo-job.yml | envsubst | kubectl apply -f -   
 
 
 
-      # - name: Fill in the new image ID in the Amazon ECS task definition
-      #   id: task-def
-      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
-      #   with:
-      #     task-definition: ${{ env.ECS_TASK_DEFINITION }}
-      #     container-name: ${{ env.CONTAINER_NAME }}
-      #     image: ${{ steps.build-image.outputs.image }}
+# #       - name: Switch to staging cluster
+# # #         run: kubectl config use-context prod-cluster
+# #         uses: swdotcom/update-and-apply-kubernetes-configs@v1
+# #         with:
+# #           k8-config-file-paths: ./demo-job.yml 
+# #           replacement-method: defined
+# #         env:
+# #           IMAGE_TAG: ${{ github.sha }}
+# #           # CHANGE_CAUSE: ${{ github.event.release.tag_name }}
 
-      # - name: Deploy Amazon ECS task definition
-      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      #   with:
-      #     task-definition: ${{ steps.task-def.outputs.task-definition }}
-      #     service: ${{ env.ECS_SERVICE }}
-      #     cluster: ${{ env.ECS_CLUSTER }}
-      #     wait-for-service-stability: true
+#       # - name: deploy to cluster  
+#       #   uses: kodermax/kubectl-aws-eks@master  #this image allows kubectl usage
+#       #   env:
+#       #     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
+#       #     # ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#       #     # ECR_REPOSITORY: movie-app
+#       #     # IMAGE_TAG: ${{ github.sha }}
+#       #   with:
+#       #     args: apply -f demo-job.yml
+#           # create job testjob --image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+#           # cronjob kubectl create job --from=cronjob/<cronjob-name> <job-name> --image=image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+
+
+#       # - name: Fill in the new image ID in the Amazon ECS task definition
+#       #   id: task-def
+#       #   uses: aws-actions/amazon-ecs-render-task-definition@v1
+#       #   with:
+#       #     task-definition: ${{ env.ECS_TASK_DEFINITION }}
+#       #     container-name: ${{ env.CONTAINER_NAME }}
+#       #     image: ${{ steps.build-image.outputs.image }}
+
+#       # - name: Deploy Amazon ECS task definition
+#       #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+#       #   with:
+#       #     task-definition: ${{ steps.task-def.outputs.task-definition }}
+#       #     service: ${{ env.ECS_SERVICE }}
+#       #     cluster: ${{ env.ECS_CLUSTER }}
+#       #     wait-for-service-stability: true
