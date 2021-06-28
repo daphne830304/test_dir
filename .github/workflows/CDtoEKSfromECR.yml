@@ -5,8 +5,8 @@
 name: Deploy to Amazon EKS
 
 on:
-  push:
-    branches: [ master ]
+#   push:
+#     branches: [ master ]
 
 
 env:
