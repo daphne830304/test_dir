@@ -71,7 +71,7 @@ jobs:
           echo ${KUBE_CONFIG_DATA} | base64 -d > ${KUBECONFIG}
           kubectl config use-context arn:aws:eks:us-east-2:720641203850:cluster/prod-cluster 
           # kubectl delete jobs database-dump-demo
-          cat demo-job.yml | envsubst | kubectl apply -f -
+          cat cronjob.yml | envsubst | kubectl apply -f -
         
         
       - name: Send GitHub Action trigger data to Slack workflow

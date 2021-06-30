@@ -1,0 +1,31 @@
+
+
+subnet-8911b4b4 / Db subnet us-east-1e Public
+subnet-346e5e1f / Db subnet us-east-1c Public
+
+subnet-08037622 / Lambda subnet us-east-1c
+0.0.0.0/0	nat-008e11326adbecb64
+
+subnet-c6644cfa / Lambda subnet e us-east-1e
+0.0.0.0/0	nat-008e11326adbecb64
+
+subnet-abc930e2 / Public subnet 2 us-east-1d (private)
+0.0.0.0/0	nat-008e11326adbecb64
+
+subnet-0dec76dc5b908e2fd / public-us-east-1d
+0.0.0.0/0	igw-e081de85
+
+subnet-514a4f6c / Public subnet us-east-1e
+
+subnet-0ac0b536 / Private subnet us-east-1e
+0.0.0.0/0	nat-008e11326adbecb64
+
+subnet-2eadd305 / Public subnet us-east-1c
+
+subnet-28add303 / Private subnet us-east-1c
+not routed to nat gateway
+
+subnet-abc930e2 / Public subnet 2 us-east-1d
+0.0.0.0/0	nat-008e11326adbecb64
+
+

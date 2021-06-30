@@ -1,0 +1,22 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: test-job
+spec:
+  #job usually dont need a selector
+  schedule: "0 0 * * *"  #run daily at midnight
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: c
+            image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+            # env:
+            #   - name: PASSWORD
+            #     value: "Placeholder"
+            #   - name: HOST
+            #     value: "placeholder"
+            imagePullPolicy: IfNotPresent
+          restartPolicy: Never
+          # concurrencyPolicy: Allow 
