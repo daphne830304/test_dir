@@ -36,42 +36,52 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-#       - name: Configure AWS credentials
-#         uses: aws-actions/configure-aws-credentials@v1
-#         with:
-#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#           aws-region: ${{ env.AWS_REGION }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-#       - name: Login to Amazon ECR
-#         id: login-ecr
-#         uses: aws-actions/amazon-ecr-login@v1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
-#       - name: Build, tag, and push image to Amazon ECR
-#         id: build-image
-#         env:
-#           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-#           IMAGE_TAG: ${{ github.sha }}
-#         run: |
-#           # Build a docker container and
-#           # push it to ECR so that it can
-#           # be deployed to ECS.
-#           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./Docker
-#           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-#           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./Docker
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
       
       
-#       - name: Subsitute ENV variables in kubernetes job yaml files and apply to kubernetes
-#         env:
-#           IMAGE_TAG: ${{ github.sha }}
-#           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-#           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
+      - name: Subsitute ENV variables in kubernetes job yaml files and apply to kubernetes
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
 
-#         run: |
-#           echo ${KUBE_CONFIG_DATA} | base64 -d > ${KUBECONFIG}
-#           kubectl config use-context arn:aws:eks:us-east-2:720641203850:cluster/prod-cluster 
-#           kubectl delete jobs database-dump-demo
-#           cat demo-job.yml | envsubst | kubectl apply -f -   
+        run: |
+          echo ${KUBE_CONFIG_DATA} | base64 -d > ${KUBECONFIG}
+          kubectl config use-context arn:aws:eks:us-east-2:720641203850:cluster/prod-cluster 
+          # kubectl delete jobs database-dump-demo
+          cat demo-job.yml | envsubst | kubectl apply -f -
+        
+        
+      # - name: Post to a Slack channel
+      #   id: slack
+      #   uses: slackapi/slack-github-action@v1.14.0
+      #   with:
+      #     channel-id: 'CHANNEL_ID'  # Slack channel id to post message
+      #     slack-message: 'posting from a github action!'
+      #   env:
+      #     SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
 
 
