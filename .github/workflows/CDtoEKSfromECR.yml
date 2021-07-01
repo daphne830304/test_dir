@@ -19,6 +19,7 @@ env:
   CONTAINER_NAME: movie-app           # set this to the name of the container in the
                                                #containerDefinitions section of your task definition
   KUBECONFIG: KUBECONFIG
+  IMAGE_NAME: prodtodevsync
 
 defaults:
   run:
@@ -56,8 +57,9 @@ jobs:
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./Docker
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME):$(echo $IMAGE_TAG | head -c7) ./Docker
+          # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME):$(echo $IMAGE_TAG | head -c7)
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
       
       
@@ -82,42 +84,42 @@ jobs:
 
 
 
-# #       - name: Switch to staging cluster
-# # #         run: kubectl config use-context prod-cluster
-# #         uses: swdotcom/update-and-apply-kubernetes-configs@v1
-# #         with:
-# #           k8-config-file-paths: ./demo-job.yml 
-# #           replacement-method: defined
-# #         env:
-# #           IMAGE_TAG: ${{ github.sha }}
-# #           # CHANGE_CAUSE: ${{ github.event.release.tag_name }}
+#       - name: Switch to staging cluster
+# #         run: kubectl config use-context prod-cluster
+#         uses: swdotcom/update-and-apply-kubernetes-configs@v1
+#         with:
+#           k8-config-file-paths: ./demo-job.yml 
+#           replacement-method: defined
+#         env:
+#           IMAGE_TAG: ${{ github.sha }}
+#           # CHANGE_CAUSE: ${{ github.event.release.tag_name }}
 
-#       # - name: deploy to cluster  
-#       #   uses: kodermax/kubectl-aws-eks@master  #this image allows kubectl usage
-#       #   env:
-#       #     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
-#       #     # ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-#       #     # ECR_REPOSITORY: movie-app
-#       #     # IMAGE_TAG: ${{ github.sha }}
-#       #   with:
-#       #     args: apply -f demo-job.yml
-#           # create job testjob --image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-#           # cronjob kubectl create job --from=cronjob/<cronjob-name> <job-name> --image=image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+#       - name: deploy to cluster  
+#         uses: kodermax/kubectl-aws-eks@master  #this image allows kubectl usage
+#         env:
+#           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
+#           # ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#           # ECR_REPOSITORY: movie-app
+#           # IMAGE_TAG: ${{ github.sha }}
+#         with:
+#           args: apply -f demo-job.yml
+#           create job testjob --image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+#           cronjob kubectl create job --from=cronjob/<cronjob-name> <job-name> --image=image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
 
 
-#       # - name: Fill in the new image ID in the Amazon ECS task definition
-#       #   id: task-def
-#       #   uses: aws-actions/amazon-ecs-render-task-definition@v1
-#       #   with:
-#       #     task-definition: ${{ env.ECS_TASK_DEFINITION }}
-#       #     container-name: ${{ env.CONTAINER_NAME }}
-#       #     image: ${{ steps.build-image.outputs.image }}
+#       - name: Fill in the new image ID in the Amazon ECS task definition
+#         id: task-def
+#         uses: aws-actions/amazon-ecs-render-task-definition@v1
+#         with:
+#           task-definition: ${{ env.ECS_TASK_DEFINITION }}
+#           container-name: ${{ env.CONTAINER_NAME }}
+#           image: ${{ steps.build-image.outputs.image }}
 
-#       # - name: Deploy Amazon ECS task definition
-#       #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-#       #   with:
-#       #     task-definition: ${{ steps.task-def.outputs.task-definition }}
-#       #     service: ${{ env.ECS_SERVICE }}
-#       #     cluster: ${{ env.ECS_CLUSTER }}
-#       #     wait-for-service-stability: true
+#       - name: Deploy Amazon ECS task definition
+#         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+#         with:
+#           task-definition: ${{ steps.task-def.outputs.task-definition }}
+#           service: ${{ env.ECS_SERVICE }}
+#           cluster: ${{ env.ECS_CLUSTER }}
+#           wait-for-service-stability: true
