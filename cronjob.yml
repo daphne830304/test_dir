@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
           - name: c
-            image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+            image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${FULL_IMAGE_TAG}
             # env:
             #   - name: PASSWORD
             #     value: "Placeholder"
