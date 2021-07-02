@@ -14,6 +14,7 @@ env:
   ECR_REPOSITORY: prodtodevsync          # set this to your Amazon ECR repository name
   KUBECONFIG: KUBECONFIG
   IMAGE_NAME: prodtodevsync
+  FULL_IMAGE_TAG: IMAGE_TAG
 
 defaults:
   run:
@@ -59,14 +60,15 @@ jobs:
       - name: Subsitute ENV variables in kubernetes job yaml files and apply to kubernetes
         env:
           IMAGE_TAG: ${{ github.sha }}
+          SHORT_IMAGE_TAG: shortimagetag
           IMAGE_NAME: prodtodevsync
-          FULL_IMAGE_TAG: $(echo $IMAGE_NAME)-$(echo $IMAGE_TAG | head -c7)
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING_DEPLOY }}
 
         run: |
           echo ${KUBE_CONFIG_DATA} | base64 -d > ${KUBECONFIG}
           kubectl config use-context arn:aws:eks:us-east-1:147889011121:cluster/prod-cluster
+          git rev-parse --short $IMAGE_TAG > $SHORT_IMAGE_TAG
           cat demo-job.yml | envsubst | kubectl apply -f -
         
         
