@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: database-dump
-        image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_NAME}_${IMAGE_TAG}
+        image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
         # image: 720641203850.dkr.ecr.us-east-2.amazonaws.com/movie-app:2a3151f5a9be6ce32f58b5660af6b63471c16b9e
         env:
             - name: PASSWORD
