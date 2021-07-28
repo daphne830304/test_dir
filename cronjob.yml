@@ -2,16 +2,19 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: test-job
+  namespace: cronjob
 spec:
   #job usually dont need a selector
-  schedule: "0 0 * * *"  #run daily at midnight
+  schedule: "* * * * *"  #run daily at midnight
   jobTemplate:
     spec:
       template:
         spec:
           containers:
           - name: c
-            image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${FULL_IMAGE_TAG}
+            # image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${FULL_IMAGE_TAG}
+            image: 720641203850.dkr.ecr.us-east-2.amazonaws.com/movie-app:2a3151f5a9be6ce32f58b5660af6b63471c16b9e
+
             # env:
             #   - name: PASSWORD
             #     value: "Placeholder"
