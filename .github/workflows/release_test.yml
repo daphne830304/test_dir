@@ -50,8 +50,8 @@ jobs:
         id: extract_branch
         
       - name: check branch
-        if: contains( ${{ steps.extract_branch.outputs.branch }} ,"image")
-        run: echo "${{ steps.extract_branch.outputs.branch }}"
+        if: contains( ${{ steps.extract_branch.outputs.branch }} ,"hello")
+        run: echo "should be printed"
       
 
 
