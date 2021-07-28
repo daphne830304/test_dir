@@ -43,7 +43,7 @@ jobs:
 #         id: extract_branch
 
       - name: check branch
-        if: contains(${GITHUB_REF##*/},'hello')
+        if: contains('${GITHUB_REF##*/}','hello')
         run: echo "i dont contain"
         
 
