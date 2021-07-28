@@ -94,6 +94,9 @@ jobs:
           kubectl config use-context arn:aws:eks:us-east-2:720641203850:cluster/database-dump
           cat demo-job.yml | envsubst | kubectl apply -f -
       
+      - name: test
+        run: cat ./Docker/Dockerfile
+      
 
 
 
