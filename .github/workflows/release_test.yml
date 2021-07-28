@@ -32,20 +32,19 @@ jobs:
 
     steps:
         
-#       - name: Checkout
-#         uses: actions/checkout@v2
-      - name: testing code
-        run: echo "${GITHUB_REF##*/}"
+# #       - name: Checkout
+# #         uses: actions/checkout@v2
+#       - name: testing code
+#         run: echo "${GITHUB_REF##*/}"
       
-      - name: Extract branch name
-        run: echo "env.BRANCH"
-      - name: testing
-        if: contains(env.BRANCH,'master')
-        run: echo "should be printed"
+#       - name: Extract branch name
+#         run: echo "env.BRANCH"
+#       - name: testing
+#         if: contains(env.BRANCH,'master')
+#         run: echo "should be printed"
       
         
       - name: Extract branch name
-        shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
         
