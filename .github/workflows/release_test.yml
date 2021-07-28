@@ -77,7 +77,7 @@ jobs:
           # echo "##[set-output name=image;]$(echo $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_NAME-$IMAGE_TAG)"
       
       - name: testing output name
-        run: echo '${{steps.build_image.outputs.image}}'
+        run: echo '${{steps.build-image.outputs.image}}'
           
       # - name: Subsitute ENV variables in kubernetes job yaml files and apply to kubernetes
       #   if: contains(env.BRANCH, 'master')
