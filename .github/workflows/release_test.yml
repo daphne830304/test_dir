@@ -19,7 +19,7 @@ env:
   ECR_REPOSITORY: image-services          # set this to your Amazon ECR repository name
   KUBECONFIG: KUBECONFIG
   IMAGE_NAME: image-services
-  BRANCH: ${GITHUB_REF##*/}
+  BRANCH: BRANCH
 
 defaults:
   run:
@@ -48,9 +48,17 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
         
-      - name: check branch
+      - name: Set environmental variables for image branch
         if: contains(steps.extract_branch.outputs.branch,'master')
-        run: echo "should be printed"
+        run: echo "BRANCH=${{steps.extract_branch.outputs.branch}}" >> $GITHUB_ENV
+        
+      - name: test output
+        run: echo "$BRANCH"
+        
+#       - name: set env 
+#       - name: Set env
+#       echo "{name}={value}" >> $GITHUB_ENV
+#       run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
       
 
 
