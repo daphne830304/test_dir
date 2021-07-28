@@ -47,7 +47,7 @@ jobs:
         run: echo "BRANCH1=${GITHUB_REF##*/}" >> $GITHUB_ENV
         
       - name: test if
-        if: contains(env.BRANCH1, "master")
+        if: contains(env.BRANCH1, 'master')
         run: echo "should be printed"
 
 
