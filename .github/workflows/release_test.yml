@@ -37,14 +37,14 @@ jobs:
       - name: testing code
         run: echo "${GITHUB_REF##*/}"
       
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
+#       - name: Extract branch name
+#         shell: bash
+#         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+#         id: extract_branch
 
       - name: check branch
-        if: contains('hello', ${{ steps.extract_branch.outputs.branch }})
-        run: echo "${{ steps.extract_branch.outputs.branch }}"
+        if: contains(${GITHUB_REF##*/},'hello')
+        run: echo "i dont contain"
         
 
    
