@@ -43,7 +43,7 @@ jobs:
 #         id: extract_branch
 
       - name: check branch
-        if: contains("${GITHUB_REF##*/}","master")
+        if: contains( ${GITHUB_REF##*/} ,"master")
         run: echo "i contain image"
         
 
