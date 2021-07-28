@@ -56,20 +56,40 @@ jobs:
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
-        if: contains(env.BRANCH, 'hello')
+        if: contains(env.BRANCH, 'image')
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
           IMAGE_NAME: prodtodevsync
+          SHORT_TAG: SHORT_TAG
         run: |
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
-          # docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)-$(echo $IMAGE_TAG | head -c7) ./Docker
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)_$(echo $IMAGE_TAG) ./Docker
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)_$(echo $IMAGE_TAG)
-          # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)-$(echo $IMAGE_TAG | head -c7)
-          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)-$(echo $IMAGE_TAG | head -c7) ./Docker
+          
+          #docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)_$(echo $IMAGE_TAG) ./Docker
+          #docker push $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)_$(echo $IMAGE_TAG)
+          
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)-$(echo $IMAGE_TAG | head -c7)
+          #echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          
+          echo "##[set-output name=image;]$(echo $IMAGE_TAG | head -c7 })"
+          
+      - name: Subsitute ENV variables in kubernetes job yaml files and apply to kubernetes
+        if: contains(env.BRANCH, 'image')
+        env:
+          #IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{steps.build_image.outputs.image}}"
+          SHORT_IMAGE_TAG: shortimagetag
+          IMAGE_NAME: test-job
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING_DEPLOY }}
+
+        run: |
+          echo ${KUBE_CONFIG_DATA} | base64 -d > ${KUBECONFIG}
+          kubectl config use-context arn:aws:eks:us-east-2:720641203850:cluster/database-dump
+          cat demo-job.yml | envsubst | kubectl apply -f -
       
 
 
