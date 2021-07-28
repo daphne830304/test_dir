@@ -1,0 +1,123 @@
+# This workfloww is to to build a containerized application, 
+# push it to Amazon Elastic Container Registry (ECR), 
+# and deploy it to EKS.
+
+name: Deploy to Amazon EKS
+
+on:
+#   push:
+#     branches: [ main ]
+  release:
+    types:
+      - created
+  workflow_dispatch:
+  
+
+
+env:
+  AWS_REGION: us-east-2                # set this to your preferred AWS region, e.g. us-west-1
+  ECR_REPOSITORY: movie-app          # set this to your Amazon ECR repository name
+  KUBECONFIG: KUBECONFIG
+  IMAGE_NAME: image-services
+  BRANCH: BRANCH
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    
+      - name: Set environmental variables for image branch
+        run: echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+        
+#       - name: test if
+#         if: contains(env.BRANCH, 'image')
+#         run: echo "should not be printed"
+        
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        if: contains(env.BRANCH, 'image')
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_NAME: prodtodevsync
+          SHORT_TAG: SHORT_TAG
+        run: |
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)-$(echo $IMAGE_TAG | head -c7) ./Docker
+          
+          #docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)_$(echo $IMAGE_TAG) ./Docker
+          #docker push $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)_$(echo $IMAGE_TAG)
+          
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)-$(echo $IMAGE_TAG | head -c7)
+          #echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          
+          echo "##[set-output name=image;]$(echo $IMAGE_TAG | head -c7 })"
+          
+      - name: Subsitute ENV variables in kubernetes job yaml files and apply to kubernetes
+        if: contains(env.BRANCH, 'image')
+        env:
+          #IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{steps.build_image.outputs.image}}"
+          SHORT_IMAGE_TAG: shortimagetag
+          IMAGE_NAME: test-job
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
+
+        run: |
+          echo ${KUBE_CONFIG_DATA} | base64 -d > ${KUBECONFIG}
+          kubectl config use-context arn:aws:eks:us-east-2:720641203850:cluster/database-dump
+          cat demo-job.yml | envsubst | kubectl apply -f -
+      
+
+
+
+
+      
+        
+#       - name: Extract branch name
+#         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+#         id: extract_branch
+        
+      
+        
+#       - name: test output
+#         run: echo "$BRANCH1"
+        
+#       - name: Set environmental variables for image branch
+#         if: contains(steps.extract_branch.outputs.branch,'master')
+#         run: echo "BRANCH=${{steps.extract_branch.outputs.branch}}" >> $GITHUB_ENV
+        
+#       - name: test output
+#         run: echo "$BRANCH"
+        
+#       - name: set env 
+#       - name: Set env
+#       echo "{name}={value}" >> $GITHUB_ENV
+#       run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
+      
+
+
+   
