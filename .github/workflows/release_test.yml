@@ -19,7 +19,7 @@ env:
   ECR_REPOSITORY: image-services          # set this to your Amazon ECR repository name
   KUBECONFIG: KUBECONFIG
   IMAGE_NAME: image-services
-  BRANCH: BRANCH
+  BRANCH1: BRANCH
 
 defaults:
   run:
