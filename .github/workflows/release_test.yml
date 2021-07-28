@@ -51,7 +51,7 @@ jobs:
         
       - name: check branch
 #         if: contains( ${GITHUB_REF##*/} ,"master")
-        run: echo "steps.extract_branch.outputs.branch"
+        run: echo "${{ steps.extract_branch.outputs.branch }}"
       
 
 
