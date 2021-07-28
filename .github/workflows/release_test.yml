@@ -66,34 +66,34 @@ jobs:
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)-$(echo $IMAGE_TAG | head -c7) ./Docker
+          # docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)-$(echo $IMAGE_TAG | head -c7) ./Docker
           
           #docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)_$(echo $IMAGE_TAG) ./Docker
           #docker push $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)_$(echo $IMAGE_TAG)
           
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)-$(echo $IMAGE_TAG | head -c7)
-          # echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_NAME-$IMAGE_TAG"
+          # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)-$(echo $IMAGE_TAG | head -c7)
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_NAME-$IMAGE_TAG"
           
-          echo "##[set-output name=image;]$(echo $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_NAME-$IMAGE_TAG})"
+          # echo "##[set-output name=image;]$(echo $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_NAME-$IMAGE_TAG)"
       
       - name: testing output name
         run: echo '${{steps.build_image.outputs.image}}'
           
-      - name: Subsitute ENV variables in kubernetes job yaml files and apply to kubernetes
-        if: contains(env.BRANCH, 'master')
-        env:
-          #IMAGE_TAG: ${{ github.sha }}
-          FULL_IMAGE_NAME: ${{ steps.build_image.outputs.image }}
-          # IMAGE_TAG: ${{steps.build_image.outputs.image}}"
-          SHORT_IMAGE_TAG: shortimagetag
-          IMAGE_NAME: prodtodevsync
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
+      # - name: Subsitute ENV variables in kubernetes job yaml files and apply to kubernetes
+      #   if: contains(env.BRANCH, 'master')
+      #   env:
+      #     #IMAGE_TAG: ${{ github.sha }}
+      #     FULL_IMAGE_NAME: ${{ steps.build_image.outputs.image }}
+      #     # IMAGE_TAG: ${{steps.build_image.outputs.image}}"
+      #     SHORT_IMAGE_TAG: shortimagetag
+      #     IMAGE_NAME: prodtodevsync
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
 
-        run: |
-          echo ${KUBE_CONFIG_DATA} | base64 -d > ${KUBECONFIG}
-          kubectl config use-context arn:aws:eks:us-east-2:720641203850:cluster/database-dump
-          cat demo-job.yml | envsubst | kubectl apply -f -
+      #   run: |
+      #     echo ${KUBE_CONFIG_DATA} | base64 -d > ${KUBECONFIG}
+      #     kubectl config use-context arn:aws:eks:us-east-2:720641203850:cluster/database-dump
+      #     cat demo-job.yml | envsubst | kubectl apply -f -
       
 
 
