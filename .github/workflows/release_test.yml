@@ -56,7 +56,7 @@ jobs:
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
-        if: contains(env.BRANCH, 'image')
+        if: contains(env.BRANCH, 'hello')
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
