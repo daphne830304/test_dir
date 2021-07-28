@@ -41,7 +41,7 @@ jobs:
         id: extract_branch
 
       - name: check branch
-#         if: contains('image', ${{ steps.extract_branch.outputs.branch }})
+        if: contains('image', ${{ steps.extract_branch.outputs.branch }})
         run: echo "${{ steps.extract_branch.outputs.branch }}"
         
 
