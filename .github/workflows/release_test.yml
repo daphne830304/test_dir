@@ -50,8 +50,8 @@ jobs:
         id: extract_branch
         
       - name: check branch
-        if: contains( '${{ steps.extract_branch.outputs.branch }}' ,'hello')
-        run: echo "should be printed"
+        if: contains(steps.extract_branch.outputs.branch,'hello')
+        run: echo "shouldnt be printed"
       
 
 
