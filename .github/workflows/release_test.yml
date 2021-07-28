@@ -74,7 +74,7 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$(echo $IMAGE_NAME)-$(echo $IMAGE_TAG | head -c7)
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_NAME-$(echo $IMAGE_TAG | head -c7)"
           
-          # echo "##[set-output name=image;]$(echo $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_NAME-$IMAGE_TAG)"
+          # echo "##[set-output name=image;]$(echo $IMAGE_TAG | head -c7)"
       
       - name: testing output name
         run: echo '${{steps.build-image.outputs.image}}'
@@ -82,9 +82,9 @@ jobs:
       - name: Subsitute ENV variables in kubernetes job yaml files and apply to kubernetes
         if: contains(env.BRANCH, 'master')
         env:
-          #IMAGE_TAG: ${{ github.sha }}
-          FULL_IMAGE_NAME: ${{ steps.build_image.outputs.image }}
-          # IMAGE_TAG: ${{steps.build_image.outputs.image}}"
+          # IMAGE_TAG: ${{ github.sha }}
+          # FULL_IMAGE_NAME: ${{ steps.build_image.outputs.image }}
+          IMAGE_TAG: ${{ steps.build_image.outputs.image }}"
           SHORT_IMAGE_TAG: shortimagetag
           IMAGE_NAME: prodtodevsync
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
