@@ -13,8 +13,9 @@ spec:
       - name: database-dump
         # image: 147889011121.dkr.ecr.us-east-1.amazonaws.com/prodtodevsync:prodtodevsync_15e8caa0971e9961b467d047fa5fcfe633e2d0a9
         # image: 720641203850.dkr.ecr.us-east-2.amazonaws.com/movie-app:2a3151f5a9be6ce32f58b5660af6b63471c16b9e
-        image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_NAME}-${IMAGE_TAG}
-        # image: ${FULL_IMAGE_NAME}
+        image: ${IMAGE_TAG}
+        # image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_NAME}-${IMAGE_TAG}
+        
         env:
             - name: PASSWORD
               value: "env-var"
