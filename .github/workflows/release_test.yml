@@ -56,7 +56,7 @@ jobs:
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
-        if: contains(env.BRANCH, 'master')
+        if: contains(env.BRANCH, 'hello')
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
@@ -80,7 +80,7 @@ jobs:
         run: echo '${{steps.build-image.outputs.image}}'
           
       - name: Subsitute ENV variables in kubernetes job yaml files and apply to kubernetes
-        if: contains(env.BRANCH, 'master')
+        if: contains(env.BRANCH, 'hello')
         env:
           # IMAGE_TAG: ${{ github.sha }}
           # FULL_IMAGE_NAME: ${{ steps.build_image.outputs.image }}
