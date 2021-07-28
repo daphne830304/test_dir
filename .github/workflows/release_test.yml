@@ -40,8 +40,9 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
 
-#       - name: check branch
-#         if: contains('image', ${{ steps.extract_branch.outputs.branch }}); then
+      - name: check branch
+#         if: contains('image', ${{ steps.extract_branch.outputs.branch }})
+        run: echo "${{ steps.extract_branch.outputs.branch }}"
         
 
    
