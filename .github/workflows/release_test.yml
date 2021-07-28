@@ -49,6 +49,12 @@ jobs:
         id: extract_branch
         
       - name: Set environmental variables for image branch
+        run: echo "BRANCH1=${GITHUB_REF##*/}" >> $GITHUB_ENV
+        
+      - name: test output
+        run: echo "$BRANCH1"
+        
+      - name: Set environmental variables for image branch
         if: contains(steps.extract_branch.outputs.branch,'master')
         run: echo "BRANCH=${{steps.extract_branch.outputs.branch}}" >> $GITHUB_ENV
         
